@@ -34,6 +34,7 @@ class DateResolverDialog extends CancelAndHelpDialog {
 
     async FirstGetDateTimeStep(stepContext) {
         let LUISresult = await LuisHelper.ParseDateTime(stepContext.context); //回覆格式為ISO_8601，這邊再用Moment.js來轉換成自定義的格式
+        await stepContext.context.sendActivity(LUISresult);
         let MomentJSResult = moment(LUISresult,moment.ISO_8601).format('YYYY年MM月DD日 HH:mm');
         
         const LeaveDetails = stepContext.options;
