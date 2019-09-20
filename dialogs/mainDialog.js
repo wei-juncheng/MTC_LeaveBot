@@ -55,7 +55,7 @@ class MainDialog extends ComponentDialog {
             return await stepContext.next();
         }
 
-        return await stepContext.prompt('TextPrompt', { prompt: 'What can I help you with today?\nSay something like "Book a flight from Paris to Berlin on March 22, 2020"' });
+        return await stepContext.prompt('TextPrompt', { prompt: '我是負責處理請假的機器人，請問你是要請假嗎?' });
     }
 
     /**
@@ -100,7 +100,7 @@ class MainDialog extends ComponentDialog {
             // If the call to the booking service was successful tell the user.
             // const timeProperty = new TimexProperty(result.travelDate);
             // const travelDateMsg = timeProperty.toNaturalLanguage(new Date(Date.now()));
-            const msg = `日期:${result.Date}  假別:${result.Type} `;
+            const msg = `起始日期:${result.StartDateTime} 結束日期:${result.EndDateTime} 假別:${result.Type} `;
             await stepContext.context.sendActivity(msg);
         } else {
             await stepContext.context.sendActivity('Thank you.');

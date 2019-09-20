@@ -9,8 +9,8 @@ class LuisHelper {
      * @param {TurnContext} context
      */
     static async executeLuisQuery(context) {
-        const bookingDetails = {};
-
+        // const bookingDetails = {};
+        let recognizerResult;
         try {
             const recognizer = new LuisRecognizer({
                 applicationId: process.env.LuisAppId,
@@ -18,26 +18,34 @@ class LuisHelper {
                 endpoint: `https://${ process.env.LuisAPIHostName }`
             }, {}, true);
 
-            const recognizerResult = await recognizer.recognize(context);
+            recognizerResult = await recognizer.recognize(context);
 
-            const intent = LuisRecognizer.topIntent(recognizerResult);
+            // const intent = LuisRecognizer.topIntent(recognizerResult);
 
-            bookingDetails.intent = intent;
+            // bookingDetails.intent = intent;
 
-            if (intent === 'Book_flight') {
-                // We need to get the result from the LUIS JSON which at every level returns an array
+            // if (intent === 'Book_flight') {
+            //     // We need to get the result from the LUIS JSON which at every level returns an array
 
-                bookingDetails.destination = LuisHelper.parseCompositeEntity(recognizerResult, 'To', 'Airport');
-                bookingDetails.origin = LuisHelper.parseCompositeEntity(recognizerResult, 'From', 'Airport');
+            //     bookingDetails.destination = LuisHelper.parseCompositeEntity(recognizerResult, 'To', 'Airport');
+            //     bookingDetails.origin = LuisHelper.parseCompositeEntity(recognizerResult, 'From', 'Airport');
 
-                // This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
-                // TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.
-                bookingDetails.travelDate = LuisHelper.parseDatetimeEntity(recognizerResult);
-            }
+            //     // This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
+            //     // TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.
+            //     bookingDetails.travelDate = LuisHelper.parseDatetimeEntity(recognizerResult);
+            // }
+            
         } catch (err) {
             console.warn(`LUIS Exception: ${ err } Check your LUIS configuration`);
         }
-        return bookingDetails;
+        return recognizerResult;
+    }
+
+    static async ParseDateTime(context){
+        let result = await LuisHelper.executeLuisQuery(context);
+        // console.log(result.entities.datetime[0].timex[0])
+        return result.entities.datetime[0].timex[0];
+
     }
 
     static parseCompositeEntity(result, compositeName, entityName) {
