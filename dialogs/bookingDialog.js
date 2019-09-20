@@ -67,7 +67,7 @@ class BookingDialog extends CancelAndHelpDialog {
     }
 
     async getStartDateTimeBeginDialog(stepContext){
-        await stepContext.context.sendActivity('getStartDateTimeBeginDialog');
+        // await stepContext.context.sendActivity('getStartDateTimeBeginDialog');
         return await stepContext.beginDialog(DATE_RESOLVER_DIALOG);
     }
 
