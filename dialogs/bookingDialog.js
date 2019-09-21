@@ -29,11 +29,7 @@ class BookingDialog extends CancelAndHelpDialog {
                 this.GetDateAskType.bind(this),
                 this.GetTypeConfirm.bind(this),
                 this.finalStep.bind(this)
-                // this.destinationStep.bind(this),
-                // this.originStep.bind(this),
-                // this.travelDateStep.bind(this),
-                // this.confirmStep.bind(this),
-                // this.finalStep.bind(this)
+                
             ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
