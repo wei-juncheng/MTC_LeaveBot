@@ -55,7 +55,7 @@ class MainDialog extends ComponentDialog {
             return await stepContext.next();
         }
 
-        return await stepContext.prompt('TextPrompt', { prompt: '我是負責處理請假的機器人，請問你是要請假嗎?' });
+        return await stepContext.prompt('TextPrompt', { prompt: `Hi,${stepContext.context.activity.from.name}.  我是負責處理請假的機器人，請問你是要請假嗎?` });
     }
 
     /**
