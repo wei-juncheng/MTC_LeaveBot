@@ -80,57 +80,47 @@ class BookingDialog extends CancelAndHelpDialog {
         LeaveDetails.Type = stepContext.result;
 
         const welcomeCard = CardFactory.adaptiveCard({
-            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
             "type": "AdaptiveCard",
-            "version": "1.0",
             "body": [
-              
-              {
-                "type": "TextBlock",
-                "spacing": "medium",
-                "size": "default",
-                "weight": "bolder",
-                "text": "假單",
-                "wrap": true,
-                "maxLines": 0
-              },
-              {
-                "type": "TextBlock",
-                "size": "default",
-                // "isSubtle": "yes",
-                "text": "以下是我收到的請假資訊",
-                "wrap": true,
-                "maxLines": 0
-              },
-              {
-                "type": "Container",
-                "items": [
-                  
-                  {
+                {
+                    "type": "TextBlock",
+                    "size": "Large",
+                    "weight": "Bolder",
+                    "text": "請假單",
+                    "horizontalAlignment": "Center"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "以下是本次申請的請假資訊",
+                    "wrap": true,
+                    "size": "Small"
+                },
+                {
                     "type": "FactSet",
                     "facts": [
-                      {
-                        "title": "姓名:",
-                        "value": 'test'
-                      },
-                      {
-                        "title": "起始日期時間:",
-                        "value": 'test'
-                      },
-                      {
-                        "title": "結束日期時間:",
-                        "value": 'test'
-                      },
-                      {
-                        "title": "假別:",
-                        "value": 'test'
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          });
+                        {
+                            "title": "姓名:",
+                            "value": `${stepContext.context.activity.from.name}`
+                        },
+                        {
+                            "title": "起始時間:",
+                            "value": `${LeaveDetails.StartDateTime}`
+                        },
+                        {
+                            "title": "結束時間:",
+                            "value": `${LeaveDetails.EndDateTime}`
+                        },
+                        {
+                            "title": "假別",
+                            "value": `${LeaveDetails.Type}`
+                        }
+                    ],
+                    "spacing": "Medium"
+                }
+            ],
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.0"
+        });
         await stepContext.context.sendActivity({ attachments: [welcomeCard] });
         let msg = `請確認以上資訊是否正確`;
 
