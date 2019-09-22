@@ -35,6 +35,7 @@ class LuisHelper {
             return undefined;
         }
         else{
+            result.entities.datetime[0].timex[0] = result.entities.datetime[0].timex[0].replace('XXXX',moment().format('YYYY')); //如果年份輸入模糊，直接取代成今年
             if(result.entities.datetime[0].type === 'datetime' && moment(result.entities.datetime[0].timex[0]).isValid()){
                 return result.entities.datetime[0].timex[0];
             }

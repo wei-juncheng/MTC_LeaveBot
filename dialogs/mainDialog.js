@@ -5,6 +5,7 @@ const { TimexProperty } = require('@microsoft/recognizers-text-data-types-timex-
 const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialog } = require('botbuilder-dialogs');
 const { BookingDialog } = require('./bookingDialog');
 const { LuisHelper } = require('./luisHelper');
+const { CardFactory } = require('botbuilder');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const BOOKING_DIALOG = 'bookingDialog';
@@ -79,16 +80,19 @@ class MainDialog extends ComponentDialog {
         if (stepContext.result) {
             const result = stepContext.result;
             
-            const msg = `起始日期:${result.StartDateTime} 結束日期:${result.EndDateTime} 假別:${result.Type} `;
-            await stepContext.context.sendActivity(msg);
+            
+            // await stepContext.context.sendActivity('已完成請假手續，謝謝您 !');
+            // const msg = `起始日期:${result.StartDateTime} 結束日期:${result.EndDateTime} 假別:${result.Type} `;
+            // await stepContext.context.sendActivity(msg);
 
             //儲存資料
             let LeaveData = {StartDate:result.StartDateTime, EndDateTime:result.EndDateTime, Type: result.Type};
             this.userProfile.History.push(LeaveData);
 
             console.log(stepContext.context.activity.from.name + '目前有' + this.userProfile.History.length + '個紀錄!!');
+            await stepContext.context.sendActivity('已完成請假手續，謝謝您');
         } else {
-            await stepContext.context.sendActivity('Thank you.');
+            await stepContext.context.sendActivity('謝謝');
         }
         return await stepContext.endDialog();
     }
