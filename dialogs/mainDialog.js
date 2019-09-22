@@ -30,7 +30,8 @@ class MainDialog extends ComponentDialog {
      * @param {*} turnContext
      * @param {*} accessor
      */
-    async run(turnContext, accessor) {
+    async run(turnContext, accessor, userProfile) {
+        this.userProfile = userProfile;
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
@@ -80,6 +81,12 @@ class MainDialog extends ComponentDialog {
             
             const msg = `起始日期:${result.StartDateTime} 結束日期:${result.EndDateTime} 假別:${result.Type} `;
             await stepContext.context.sendActivity(msg);
+
+            //儲存資料
+            let LeaveData = {StartDate:result.StartDateTime, EndDateTime:result.EndDateTime, Type: result.Type};
+            this.userProfile.History.push(LeaveData);
+
+            console.log(stepContext.context.activity.from.name + '目前有' + this.userProfile.History.length + '個紀錄!!');
         } else {
             await stepContext.context.sendActivity('Thank you.');
         }

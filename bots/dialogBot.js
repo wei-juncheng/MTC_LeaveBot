@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 const { ActivityHandler } = require('botbuilder');
+const moment = require('moment');
 
 class DialogBot extends ActivityHandler {
     /**
@@ -20,12 +21,16 @@ class DialogBot extends ActivityHandler {
         this.userState = userState;
         this.dialog = dialog;
         this.dialogState = this.conversationState.createProperty('DialogState');
+        this.userProfile = userState.createProperty('userProfile');
 
         this.onMessage(async (context, next) => {
             console.log('Running dialog with Message Activity.');
-
+            const userProfile = await this.userProfile.get(context,{Name:context.activity.from.name , History:[], messageList:[]});
             // Run the Dialog with the new message Activity.
-            await this.dialog.run(context, this.dialogState);
+            await this.dialog.run(context, this.dialogState, userProfile);
+
+            
+            userProfile.messageList.push(moment().format('MM/DD_HH:mm')+'輸入: 「' + context.activity.text + '」');
 
             // By calling next() you ensure that the next BotHandler is run.
             await next();

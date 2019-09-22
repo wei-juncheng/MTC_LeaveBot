@@ -11,6 +11,9 @@ const restify = require('restify');
 const { BotFrameworkAdapter, ConversationState, InputHints, MemoryStorage, UserState } = require('botbuilder');
 const { FlightBookingRecognizer } = require('./dialogs/flightBookingRecognizer');
 
+//CosmosDB儲存
+const { CosmosDbStorage } = require("botbuilder-azure");
+
 // This bot's main dialog.
 const { DialogAndWelcomeBot } = require('./bots/dialogAndWelcomeBot');
 const { MainDialog } = require('./dialogs/mainDialog');
@@ -52,7 +55,13 @@ let conversationState, userState;
 // is restarted, anything stored in memory will be gone.
 const memoryStorage = new MemoryStorage();
 conversationState = new ConversationState(memoryStorage);
-userState = new UserState(memoryStorage);
+const CosmosDBStorage = new CosmosDbStorage({
+    serviceEndpoint: process.env.DB_SERVICE_ENDPOINT, 
+    authKey: process.env.AUTH_KEY, 
+    databaseId: process.env.DATABASE,
+    collectionId: process.env.COLLECTION
+})
+userState = new UserState(CosmosDBStorage);
 
 // If configured, pass in the FlightBookingRecognizer.  (Defining it externally allows it to be mocked for tests)
 let luisRecognizer;

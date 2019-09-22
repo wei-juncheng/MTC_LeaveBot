@@ -24,13 +24,13 @@ class CancelAndHelpDialog extends ComponentDialog {
             switch (text) {
             case 'help':
             case '?':
-                const helpMessageText = 'Show help here';
-                await innerDc.context.sendActivity(helpMessageText, helpMessageText, InputHints.ExpectingInput);
+                await innerDc.context.sendActivity('請問有需要幫忙嗎? 如果日期一直輸入不正確，請依照例句「2019-09-12 14:20」的格式輸入，我會比較好理解');
                 return { status: DialogTurnStatus.waiting };
             case 'cancel':
             case 'quit':
-                const cancelMessageText = 'Cancelling...';
-                await innerDc.context.sendActivity(cancelMessageText, cancelMessageText, InputHints.IgnoringInput);
+            case '取消':
+            case '掰掰':
+                await innerDc.context.sendActivity('了解，取消了!');
                 return await innerDc.cancelAllDialogs();
             }
         }
