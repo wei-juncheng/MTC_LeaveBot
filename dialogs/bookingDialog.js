@@ -97,7 +97,7 @@ class BookingDialog extends CancelAndHelpDialog {
               {
                 "type": "TextBlock",
                 "size": "default",
-                "isSubtle": "yes",
+                // "isSubtle": "yes",
                 "text": "以下是我收到的請假資訊",
                 "wrap": true,
                 "maxLines": 0
