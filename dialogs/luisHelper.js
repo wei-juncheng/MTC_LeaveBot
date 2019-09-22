@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 const { LuisRecognizer } = require('botbuilder-ai');
+const moment = require('moment');
 
 class LuisHelper {
     /**
@@ -20,20 +21,7 @@ class LuisHelper {
 
             recognizerResult = await recognizer.recognize(context);
 
-            // const intent = LuisRecognizer.topIntent(recognizerResult);
-
-            // bookingDetails.intent = intent;
-
-            // if (intent === 'Book_flight') {
-            //     // We need to get the result from the LUIS JSON which at every level returns an array
-
-            //     bookingDetails.destination = LuisHelper.parseCompositeEntity(recognizerResult, 'To', 'Airport');
-            //     bookingDetails.origin = LuisHelper.parseCompositeEntity(recognizerResult, 'From', 'Airport');
-
-            //     // This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
-            //     // TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.
-            //     bookingDetails.travelDate = LuisHelper.parseDatetimeEntity(recognizerResult);
-            // }
+            
             
         } catch (err) {
             console.warn(`LUIS Exception: ${ err } Check your LUIS configuration`);
@@ -43,8 +31,25 @@ class LuisHelper {
 
     static async ParseDateTime(context){
         let result = await LuisHelper.executeLuisQuery(context);
-        // console.log(result.entities.datetime[0].timex[0])
-        return result.entities.datetime[0].timex[0];
+        if(!result.entities.hasOwnProperty('datetime')){
+            return undefined;
+        }
+        else{
+            if(result.entities.datetime[0].type === 'datetime' && moment(result.entities.datetime[0].timex[0]).isValid()){
+                return result.entities.datetime[0].timex[0];
+            }
+            else{
+                if(moment(context.activity.text).isValid()){
+                    return moment(context.activity.text,['MM/DD HH:mm','YYYY/MM/DD HH:mm','MM-DD HH:mm','YYYY-MM-DD HH:mm','MM月DD日HH:mm','YYYY年MM月DD日 HH:mm']).toISOString(true);
+                }
+                else{
+                    return undefined;
+                }
+                
+            }
+        }
+        
+        
 
     }
 
