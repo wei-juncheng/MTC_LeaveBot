@@ -79,59 +79,59 @@ class BookingDialog extends CancelAndHelpDialog {
 
         LeaveDetails.Type = stepContext.result;
 
-        // const welcomeCard = CardFactory.adaptiveCard({
-        //     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-        //     "type": "AdaptiveCard",
-        //     "version": "1.0",
-        //     "body": [
+        const welcomeCard = CardFactory.adaptiveCard({
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "type": "AdaptiveCard",
+            "version": "1.0",
+            "body": [
               
-        //       {
-        //         "type": "TextBlock",
-        //         "spacing": "medium",
-        //         "size": "default",
-        //         "weight": "bolder",
-        //         "text": "假單",
-        //         "wrap": true,
-        //         "maxLines": 0
-        //       },
-        //       {
-        //         "type": "TextBlock",
-        //         "size": "default",
-        //         "isSubtle": "yes",
-        //         "text": "以下是我收到的請假資訊",
-        //         "wrap": true,
-        //         "maxLines": 0
-        //       },
-        //       {
-        //         "type": "Container",
-        //         "items": [
+              {
+                "type": "TextBlock",
+                "spacing": "medium",
+                "size": "default",
+                "weight": "bolder",
+                "text": "假單",
+                "wrap": true,
+                "maxLines": 0
+              },
+              {
+                "type": "TextBlock",
+                "size": "default",
+                "isSubtle": "yes",
+                "text": "以下是我收到的請假資訊",
+                "wrap": true,
+                "maxLines": 0
+              },
+              {
+                "type": "Container",
+                "items": [
                   
-        //           {
-        //             "type": "FactSet",
-        //             "facts": [
-        //               {
-        //                 "title": "姓名:",
-        //                 "value": `${stepContext.context.activity.from.name}`
-        //               },
-        //               {
-        //                 "title": "起始日期時間:",
-        //                 "value": `${LeaveDetails.StartDateTime}`
-        //               },
-        //               {
-        //                 "title": "結束日期時間:",
-        //                 "value": `${LeaveDetails.EndDateTime}`
-        //               },
-        //               {
-        //                 "title": "假別:",
-        //                 "value": `${LeaveDetails.Type}`
-        //               }
-        //             ]
-        //           }
-        //         ]
-        //       }
-        //     ]
-        //   });
-        // await stepContext.context.sendActivity({ attachments: [welcomeCard] });
+                  {
+                    "type": "FactSet",
+                    "facts": [
+                      {
+                        "title": "姓名:",
+                        "value": 'test'
+                      },
+                      {
+                        "title": "起始日期時間:",
+                        "value": 'test'
+                      },
+                      {
+                        "title": "結束日期時間:",
+                        "value": 'test'
+                      },
+                      {
+                        "title": "假別:",
+                        "value": 'test'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          });
+        await stepContext.context.sendActivity({ attachments: [welcomeCard] });
         let msg = `請確認以上資訊是否正確`;
 
         return await stepContext.prompt(CONFIRM_PROMPT, {prompt:msg});
