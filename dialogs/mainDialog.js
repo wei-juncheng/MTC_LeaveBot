@@ -92,7 +92,7 @@ class MainDialog extends ComponentDialog {
             console.log(stepContext.context.activity.from.name + '目前有' + this.userProfile.History.length + '個紀錄!!');
             await stepContext.context.sendActivity('已完成請假手續，謝謝您');
         } else {
-            await stepContext.context.sendActivity('謝謝');
+            await stepContext.context.sendActivity('謝謝~');
         }
         return await stepContext.endDialog();
     }
