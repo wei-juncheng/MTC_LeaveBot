@@ -35,7 +35,7 @@ class DateResolverDialog extends CancelAndHelpDialog {
             return await stepContext.next(false); //LUIS解析結果錯誤，請再輸入一次
         }
 
-        let MomentJSResult = moment(LUISresult,moment.ISO_8601).format('YYYY年MM月DD日 HH:mm');
+        let MomentJSResult = moment(LUISresult,moment.ISO_8601).format('YYYY年MM月DD日 HH:mm').replace(' 00:00','');
         
         const LeaveDetails = stepContext.options;
         LeaveDetails.DateTime = MomentJSResult;
@@ -63,7 +63,7 @@ class DateResolverDialog extends CancelAndHelpDialog {
             return await stepContext.next(false);
         }
 
-        let MomentJSResult = moment(stepContext.result,['MM/DD HH:mm','YYYY/MM/DD HH:mm','MM-DD HH:mm','YYYY-MM-DD HH:mm','MM月DD日HH:mm','YYYY年MM月DD日 HH:mm']).format('YYYY年MM月DD日HH:mm');
+        let MomentJSResult = moment(stepContext.result,['MM/DD HH:mm','YYYY/MM/DD HH:mm','MM-DD HH:mm','YYYY-MM-DD HH:mm','MM月DD日HH:mm','YYYY年MM月DD日 HH:mm']).format('YYYY年MM月DD日 HH:mm').replace(' 00:00','');
         LeaveDetails.DateTime = MomentJSResult;
         return await stepContext.prompt(CONFIRM_PROMPT,{prompt:`我收到的日期如下「${LeaveDetails.DateTime}」，請確認是否正確`});
     }

@@ -39,45 +39,84 @@ class BookingDialog extends CancelAndHelpDialog {
     async askStartDateStep(stepContext){
         const LeaveDetails = stepContext.options;
 
-        if(!LeaveDetails.Date){
+        if(!LeaveDetails.StartDateTime){
             return await stepContext.prompt(TEXT_PROMPT, {prompt: '你什麼時候要請假呢? 請先輸入起始日期及時間:'});
             
         }
         else{
-            return await stepContext.next(LeaveDetails.Date);
+            return await stepContext.next();
         }
     }
 
     async getStartDateTimeBeginDialog(stepContext){
-        return await stepContext.beginDialog(DATE_RESOLVER_DIALOG);
+        const LeaveDetails = stepContext.options;
+
+        if(!LeaveDetails.StartDateTime){
+            return await stepContext.beginDialog(DATE_RESOLVER_DIALOG);
+        }
+        else{
+            return await stepContext.next();
+        }
+        
     }
 
     async askEndDateTime(stepContext){
         const LeaveDetails = stepContext.options;
-        LeaveDetails.StartDateTime = stepContext.result;
-        return await stepContext.prompt(TEXT_PROMPT, {prompt: '請再輸入結束日期及時間:'});
+        if(!LeaveDetails.StartDateTime){ //如果StartDateTime不存在，才要加進去
+            LeaveDetails.StartDateTime = stepContext.result;
+        }
+
+        if(!LeaveDetails.EndDateTime){ //如果EndDateTime不存在
+            return await stepContext.prompt(TEXT_PROMPT, {prompt: '請輸入結束日期及時間:'});
+        }
+        else{
+            return await stepContext.next();
+        }
+        
+        
 
     }
 
     async getEndDateTimeBeginDialog(stepContext){
-        return await stepContext.beginDialog(DATE_RESOLVER_DIALOG);
+        const LeaveDetails = stepContext.options;
+        if(!LeaveDetails.EndDateTime){
+            return await stepContext.beginDialog(DATE_RESOLVER_DIALOG);
+        }
+        else{
+            return await stepContext.next();
+        }
+        
     }
 
     
 
     async GetDateAskType(stepContext){
         const LeaveDetails = stepContext.options;
-        LeaveDetails.EndDateTime = stepContext.result;
+        if(!LeaveDetails.EndDateTime){
+            LeaveDetails.EndDateTime = stepContext.result;
+        }
+        
 
         if(!LeaveDetails.Type){
             return await stepContext.prompt(TEXT_PROMPT, {prompt: '請輸入假別(例如:事假、病假...))'});
+        }
+        else{
+            return await stepContext.next();
         }
     }
 
     async GetTypeConfirm(stepContext){
         const LeaveDetails = stepContext.options;
 
-        LeaveDetails.Type = stepContext.result;
+        if(!LeaveDetails.Type){
+            LeaveDetails.Type = stepContext.result;
+        }
+
+        if(LeaveDetails.StartDateTime === LeaveDetails.EndDateTime){
+            LeaveDetails.StartDateTime = LeaveDetails.StartDateTime.concat(' 08:00');
+            LeaveDetails.EndDateTime = LeaveDetails.EndDateTime.concat('17:00');
+        }
+        
 
         const welcomeCard = CardFactory.adaptiveCard({
             "type": "AdaptiveCard",
@@ -122,9 +161,8 @@ class BookingDialog extends CancelAndHelpDialog {
             "version": "1.0"
         });
         await stepContext.context.sendActivity({ attachments: [welcomeCard] });
-        let msg = `請確認以上資訊是否正確`;
 
-        return await stepContext.prompt(CONFIRM_PROMPT, {prompt:msg});
+        return await stepContext.prompt(CONFIRM_PROMPT, {prompt:'請確認以上資訊是否正確'});
     }
 
     async finalStep(stepContext){

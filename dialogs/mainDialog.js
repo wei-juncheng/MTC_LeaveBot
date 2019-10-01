@@ -6,6 +6,8 @@ const { ComponentDialog, DialogSet, DialogTurnStatus, TextPrompt, WaterfallDialo
 const { BookingDialog } = require('./bookingDialog');
 const { LuisHelper } = require('./luisHelper');
 const { CardFactory } = require('botbuilder');
+const { LuisRecognizer } = require('botbuilder-ai');
+// const { CardFactory } = require('botbuilder');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const BOOKING_DIALOG = 'bookingDialog';
@@ -32,7 +34,8 @@ class MainDialog extends ComponentDialog {
      * @param {*} accessor
      */
     async run(turnContext, accessor, userProfile) {
-        this.userProfile = userProfile;
+        this.userProfile = userProfile;//使用者資訊
+
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
@@ -55,22 +58,25 @@ class MainDialog extends ComponentDialog {
 
     
     async actStep(stepContext) {
-        // let bookingDetails = {};
+        let LUISReturnObject = {};
 
-        // if (process.env.LuisAppId && process.env.LuisAPIKey && process.env.LuisAPIHostName) {
-        //     // Call LUIS and gather any potential booking details.
-        //     // This will attempt to extract the origin, destination and travel date from the user's message
-        //     // and will then pass those values into the booking dialog
-        //     bookingDetails = await LuisHelper.executeLuisQuery(stepContext.context);
-
-        //     console.log('LUIS extracted these booking details:', bookingDetails);
-        // }
+        if (process.env.LuisAppId && process.env.LuisAPIKey && process.env.LuisAPIHostName) {
+            // Call LUIS and gather any potential booking details.
+            // This will attempt to extract the origin, destination and travel date from the user's message
+            // and will then pass those values into the booking dialog
+            LUISReturnObject = await LuisHelper.ParseAllEntity(stepContext.context);
+        }
 
         // In this sample we only have a single intent we are concerned with. However, typically a scenario
         // will have multiple different intents each corresponding to starting a different child dialog.
-
+        if(LuisRecognizer.topIntent(LUISReturnObject) === '查詢請假紀錄'){
+            await stepContext.context.sendActivity('以下是你的請假紀錄: ');
+            let Attachments = await MainDialog.GetLeaveHistory(this.userProfile.History, stepContext);
+            await stepContext.context.sendActivity({ attachments: Attachments });
+            return await stepContext.endDialog();
+        }
         // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-        return await stepContext.beginDialog('bookingDialog');
+        return await stepContext.beginDialog('bookingDialog',LUISReturnObject);
 
     }
 
@@ -86,7 +92,7 @@ class MainDialog extends ComponentDialog {
             // await stepContext.context.sendActivity(msg);
 
             //儲存資料
-            let LeaveData = {StartDate:result.StartDateTime, EndDateTime:result.EndDateTime, Type: result.Type};
+            let LeaveData = {StartDateTime:result.StartDateTime, EndDateTime:result.EndDateTime, Type: result.Type};
             this.userProfile.History.push(LeaveData);
 
             console.log(stepContext.context.activity.from.name + '目前有' + this.userProfile.History.length + '個紀錄!!');
@@ -95,6 +101,56 @@ class MainDialog extends ComponentDialog {
             await stepContext.context.sendActivity('謝謝~');
         }
         return await stepContext.endDialog();
+    }
+
+    static async GetLeaveHistory(History, stepContext){
+        let Attachment = [];
+        History.forEach(element => {
+            // console.log(element.StartDateTime);
+            let welcomeCard = CardFactory.adaptiveCard({
+                "type": "AdaptiveCard",
+                "body": [
+                    {
+                        "type": "TextBlock",
+                        "size": "Large",
+                        "weight": "Bolder",
+                        "text": "請假單",
+                        "horizontalAlignment": "Center"
+                    },
+                    {
+                        "type": "FactSet",
+                        "facts": [
+                            {
+                                "title": "姓名:",
+                                "value": `${stepContext.context.activity.from.name}`
+                            },
+                            {
+                                "title": "起始時間:",
+                                "value": `${element.StartDateTime}`
+                            },
+                            {
+                                "title": "結束時間:",
+                                "value": `${element.EndDateTime}`
+                            },
+                            {
+                                "title": "假別",
+                                "value": `${element.Type}`
+                            }
+                        ],
+                        "spacing": "Medium"
+                    }
+                ],
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                "version": "1.0"
+            });
+
+            Attachment.push(welcomeCard);
+
+        });
+        
+
+
+        return Attachment;
     }
 }
 
