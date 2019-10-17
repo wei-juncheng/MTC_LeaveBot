@@ -14,7 +14,7 @@ class DialogAndWelcomeBot extends DialogBot {
             for (let cnt = 0; cnt < membersAdded.length; cnt++) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
                     
-                    await context.sendActivity('嗨!'+context.activity.from.name);
+                    // await context.sendActivity('嗨!'+context.activity.from.name);
                     await dialog.run(context, conversationState.createProperty('DialogState'));
                 }
             }
